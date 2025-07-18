@@ -1,126 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Clicker Game</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            color: #0d47a1;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Super Fun Clicker Game</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+      text-align: center;
+    }
 
-        h1 {
-            margin-top: 40px;
-            font-size: 2.5rem;
-        }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
 
-        #counter {
-            font-size: 2rem;
-            margin: 20px 0;
-        }
+    h1 {
+      margin-top: 30px;
+      font-size: 3rem;
+      text-shadow: 2px 2px 4px #000;
+    }
 
-        #click-btn {
-            background: #2196f3;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 150px;
-            height: 150px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-            transition: transform 0.1s ease;
-        }
+    #counter {
+      font-size: 2rem;
+      margin: 20px 0;
+      text-shadow: 1px 1px 3px #333;
+    }
 
-        #click-btn:active {
-            transform: scale(0.95);
-        }
+    #click-btn {
+      background: radial-gradient(circle at top left, #ff6ec4, #7873f5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 180px;
+      height: 180px;
+      font-size: 1.8rem;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
 
-        .upgrade {
-            background: #64b5f6;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+    #click-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
 
-        .upgrade:hover {
-            background: #42a5f5;
-        }
+    .coin {
+      position: absolute;
+      color: gold;
+      font-size: 1.5rem;
+      animation: floatUp 1s ease forwards;
+    }
 
-        #upgrades {
-            margin-top: 30px;
-        }
-    </style>
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-50px); }
+    }
+
+    .upgrade {
+      background: linear-gradient(45deg, #42e695, #3bb2b8);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      padding: 15px 25px;
+      margin: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .upgrade:hover {
+      background: linear-gradient(45deg, #34e89e, #0f3443);
+      transform: scale(1.05);
+    }
+
+    #upgrades {
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Clicker Game</h1>
-    <div id="counter">Clicks: 0</div>
-    <button id="click-btn">Click Me!</button>
+  <h1>🌟 Super Fun Clicker 🌟</h1>
+  <div id="counter">Clicks: 0</div>
+  <button id="click-btn">🎯 Click Me!</button>
 
-    <div id="upgrades">
-        <h2>Upgrades</h2>
-        <button class="upgrade" id="auto-click">Auto Clicker (Cost: 50)</button>
-        <button class="upgrade" id="multiplier">Double Clicks (Cost: 100)</button>
-    </div>
+  <div id="upgrades">
+    <h2>🛍️ Shop Upgrades</h2>
+    <button class="upgrade" id="auto-click">Auto Clicker (50)</button>
+    <button class="upgrade" id="multiplier">Double Clicks (100)</button>
+    <button class="upgrade" id="triple">Triple Clicks (250)</button>
+    <button class="upgrade" id="mega">Mega Clicker (500)</button>
+    <button class="upgrade" id="faster-auto">Faster Auto (800)</button>
+  </div>
 
-    <script>
-        let clicks = parseInt(localStorage.getItem('clicks')) || 0;
-        let autoClickers = parseInt(localStorage.getItem('autoClickers')) || 0;
-        let multiplier = parseInt(localStorage.getItem('multiplier')) || 1;
+  <script>
+    let clicks = parseInt(localStorage.getItem('clicks')) || 0;
+    let autoClickers = parseInt(localStorage.getItem('autoClickers')) || 0;
+    let multiplier = parseInt(localStorage.getItem('multiplier')) || 1;
+    let intervalSpeed = 1000; // 1 second
+    let upgrades = {
+      autoClick: 50,
+      multiplier: 100,
+      triple: 250,
+      mega: 500,
+      fasterAuto: 800
+    };
 
-        const counter = document.getElementById('counter');
-        const clickBtn = document.getElementById('click-btn');
-        const autoClickBtn = document.getElementById('auto-click');
-        const multiplierBtn = document.getElementById('multiplier');
+    const counter = document.getElementById('counter');
+    const clickBtn = document.getElementById('click-btn');
 
-        function updateCounter() {
-            counter.textContent = "Clicks: " + clicks;
-            localStorage.setItem('clicks', clicks);
-        }
+    function updateCounter() {
+      counter.textContent = "Clicks: " + clicks;
+      localStorage.setItem('clicks', clicks);
+      localStorage.setItem('autoClickers', autoClickers);
+      localStorage.setItem('multiplier', multiplier);
+    }
 
-        clickBtn.addEventListener('click', () => {
-            clicks += 1 * multiplier;
-            updateCounter();
-        });
+    function spawnCoin() {
+      const coin = document.createElement('div');
+      coin.className = 'coin';
+      coin.textContent = '+💰';
+      coin.style.left = Math.random() * 100 + '%';
+      clickBtn.appendChild(coin);
+      setTimeout(() => coin.remove(), 1000);
+    }
 
-        autoClickBtn.addEventListener('click', () => {
-            if (clicks >= 50) {
-                clicks -= 50;
-                autoClickers++;
-                localStorage.setItem('autoClickers', autoClickers);
-                updateCounter();
-            } else {
-                alert("Not enough clicks!");
-            }
-        });
+    clickBtn.addEventListener('click', () => {
+      clicks += 1 * multiplier;
+      updateCounter();
+      spawnCoin();
+    });
 
-        multiplierBtn.addEventListener('click', () => {
-            if (clicks >= 100) {
-                clicks -= 100;
-                multiplier *= 2;
-                localStorage.setItem('multiplier', multiplier);
-                updateCounter();
-            } else {
-                alert("Not enough clicks!");
-            }
-        });
+    document.getElementById('auto-click').onclick = () => buyUpgrade('autoClick', () => autoClickers++);
+    document.getElementById('multiplier').onclick = () => buyUpgrade('multiplier', () => multiplier *= 2);
+    document.getElementById('triple').onclick = () => buyUpgrade('triple', () => multiplier *= 3);
+    document.getElementById('mega').onclick = () => buyUpgrade('mega', () => multiplier *= 5);
+    document.getElementById('faster-auto').onclick = () => buyUpgrade('fasterAuto', () => {
+      intervalSpeed /= 2;
+      clearInterval(autoInterval);
+      autoInterval = setInterval(autoClick, intervalSpeed);
+    });
 
-        setInterval(() => {
-            clicks += autoClickers * multiplier;
-            updateCounter();
-        }, 1000);
-
+    function buyUpgrade(name, effect) {
+      if (clicks >= upgrades[name]) {
+        clicks -= upgrades[name];
+        effect();
+        upgrades[name] *= 2; // Double cost for next purchase
         updateCounter();
-    </script>
+      } else {
+        alert("Not enough clicks!");
+      }
+    }
+
+    function autoClick() {
+      clicks += autoClickers * multiplier;
+      updateCounter();
+    }
+
+    let autoInterval = setInterval(autoClick, intervalSpeed);
+
+    updateCounter();
+  </script>
 </body>
 </html>
